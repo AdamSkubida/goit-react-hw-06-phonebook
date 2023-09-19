@@ -1,8 +1,12 @@
+import { useDispatch } from 'react-redux';
+import { filterContact } from 'Redux/actions';
 import css from './Filter.module.css';
 
-export const Filter = ({ onFilter }) => {
-  const handleFilterChange = e => {
-    onFilter(e.target.value);
+export const Filter = () => {
+  const dispatch = useDispatch();
+
+  const handleFilter = e => {
+    dispatch(filterContact(e.target.value));
   };
 
   return (
@@ -14,7 +18,7 @@ export const Filter = ({ onFilter }) => {
         type="text"
         name="filter"
         placeholder="Find contact..."
-        onChange={handleFilterChange}
+        onChange={handleFilter}
       ></input>
     </div>
   );

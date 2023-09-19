@@ -1,69 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ContactForm } from './ContactForm/index';
 import { Filter } from './Filter/index';
 import { ContactList } from './ContactList/index';
-import { nanoid } from 'nanoid';
-import { Notify } from 'notiflix';
+import { useSelector } from 'react-redux';
+import { getAllContacts } from 'Redux/selectors';
+import { useDispatch } from 'react-redux';
+import { setContacts } from 'Redux/actions';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
+  const useLoadContactsFromLocalStorage = () => {
+    const dispatch = useDispatch();
 
-  const addContact = (newContact, newNumber) => {
-    const exist = contacts.find(contact => contact.name === newContact);
-
-    if (!exist) {
-      const newContactPerson = {
-        name: newContact,
-        number: newNumber,
-        id: nanoid(),
-      };
-
-      setContacts([...contacts, newContactPerson]);
-      Notify.success(`Contact was added!`);
-    } else {
-      Notify.failure(`Contact exist`);
-    }
-  };
-
-  const addFilter = newFilter => {
-    setFilter(newFilter);
-  };
-
-  const deleteContact = id => {
-    const contact = contacts.find(contact => id === contact.id);
-    if (contact) {
-      Notify.failure(`${contact.name} has been deleted`);
-      setContacts(contacts.filter(contact => id !== contact.id));
-    }
-  };
-
-  useEffect(() => {
-    if ('contacts' in localStorage) {
+    useEffect(() => {
       const storedContacts = localStorage.getItem('contacts');
       console.log(storedContacts);
 
-      setContacts(JSON.parse(storedContacts));
-    }
-  }, []);
+      if (storedContacts) {
+        dispatch(setContacts(JSON.parse(storedContacts)));
+      }
+    }, []);
+  };
+  useLoadContactsFromLocalStorage();
 
+  const contacts = useSelector(getAllContacts);
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
   return (
     <div>
-      <ContactForm
-        onAdd={(name, number) => {
-          addContact(name, number);
-        }}
-      />
-      <Filter onFilter={filter => addFilter(filter)} />
-      <ContactList
-        contactItems={contacts}
-        filter={filter}
-        deleteItem={id => deleteContact(id)}
-      />
+      <ContactForm />
+      <Filter />
+      <ContactList />
     </div>
   );
 };
