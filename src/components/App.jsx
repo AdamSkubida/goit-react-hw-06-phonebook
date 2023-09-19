@@ -8,19 +8,16 @@ import { useDispatch } from 'react-redux';
 import { setContacts } from 'Redux/actions';
 
 export const App = () => {
-  const useLoadContactsFromLocalStorage = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    useEffect(() => {
-      const storedContacts = localStorage.getItem('contacts');
-      console.log(storedContacts);
+  useEffect(() => {
+    const storedContacts = localStorage.getItem('contacts');
+    console.log(storedContacts);
 
-      if (storedContacts) {
-        dispatch(setContacts(JSON.parse(storedContacts)));
-      }
-    }, []);
-  };
-  useLoadContactsFromLocalStorage();
+    if (storedContacts) {
+      dispatch(setContacts(JSON.parse(storedContacts)));
+    }
+  }, [dispatch]);
 
   const contacts = useSelector(getAllContacts);
   useEffect(() => {
