@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { ContactForm } from './ContactForm/index';
 import { Filter } from './Filter/index';
 import { ContactList } from './ContactList/index';
@@ -9,6 +9,18 @@ import { setContacts } from 'Redux/actions';
 export const App = () => {
   const dispatch = useDispatch();
 
+  const isLoaded = useRef(false);
+
+  const contacts = useSelector(getAllContacts);
+
+  useEffect(() => {
+    if (contacts.length) {
+      localStorage.setItem('contacts', JSON.stringify(contacts));
+    } else {
+      localStorage.removeItem('contacts');
+    }
+  }, [contacts]);
+
   useEffect(() => {
     const storedContacts = localStorage.getItem('contacts');
     console.log(storedContacts);
@@ -16,13 +28,13 @@ export const App = () => {
     if (storedContacts) {
       dispatch(setContacts(JSON.parse(storedContacts)));
     }
+
+    isLoaded.current = true;
+
+    return () => {
+      isLoaded.current = false;
+    };
   }, [dispatch]);
-
-  const contacts = useSelector(getAllContacts);
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
   return (
     <div>
       <ContactForm />
